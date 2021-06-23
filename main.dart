@@ -14,6 +14,8 @@ RegExp regexMultExpression = RegExp(r"(^([\-0-9.]+)\*([0-9.]+))");
 RegExp regexSumExpression = RegExp(r"(^([\-0-9.]+)\+([0-9.]+))");
 RegExp regexMinusExpression = RegExp(r"(^([\-0-9.]+)\-([0-9.]+))");
 
+RegExp regexHasAnyExpression = RegExp(r"(^([\-0-9.]+)[\-\+\*\/]([0-9.]+))");
+
 RegExp regexDivOperator = RegExp(r"[\/]");
 RegExp regexMultOperator = RegExp(r"[\*]");
 RegExp regexSumOperator = RegExp(r"[\+]");
@@ -139,9 +141,12 @@ calculator(operation) {
     // }
   }
 
-  //TODO: tratamento de erro e vazio, implementação da recursão
-
-  return print(results); //calculator(results);
+  var hasExpression = regexHasAnyExpression.hasMatch(results);
+  if (hasExpression == false) {
+    return print(results);
+  } else {
+    return calculator(results);
+  }
 }
 
 sum(a, b) {
