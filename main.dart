@@ -9,8 +9,6 @@ void main() {
   // print(calc);
 }
 
-// ^([0-9.]+)\+([0-9.]+)|^(\-[0-9.]+)\+([0-9.]+)
-
 RegExp regexDivExpression = RegExp(r"(^([\-0-9.]+)\/([0-9.]+))");
 RegExp regexMultExpression = RegExp(r"(^([\-0-9.]+)\*([0-9.]+))");
 RegExp regexSumExpression = RegExp(r"(^([\-0-9.]+)\+([0-9.]+))");
@@ -141,7 +139,8 @@ calculator(operation) {
     // }
   }
 
-  //TODO: tratamento de erro e vazio
+  //TODO: tratamento de erro e vazio, implementação da recursão
+
   return print(results); //calculator(results);
 }
 
