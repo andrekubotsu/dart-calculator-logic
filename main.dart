@@ -9,29 +9,32 @@ void main() {
   // print(calc);
 }
 
-RegExp regexDivExpression = RegExp(r"(^([\-0-9.]+)\/([0-9.]+))");
-RegExp regexMultExpression = RegExp(r"(^([\-0-9.]+)\*([0-9.]+))");
-RegExp regexSumExpression = RegExp(r"(^([\-0-9.]+)\+([0-9.]+))");
-RegExp regexMinusExpression = RegExp(r"(^([\-0-9.]+)\-([0-9.]+))");
+RegExp regexDivOperation = RegExp(r"(^([\-0-9.]+)\/([0-9.]+))");
+RegExp regexMultOperation = RegExp(r"(^([\-0-9.]+)\*([0-9.]+))");
+RegExp regexSumOperation = RegExp(r"(^([\-0-9.]+)\+([0-9.]+))");
+RegExp regexMinusOperation = RegExp(r"(^([\-0-9.]+)\-([0-9.]+))");
+RegExp regexPercentSingle = RegExp(r"(^([0-9.]+)\%)");
 
-RegExp regexHasAnyExpression = RegExp(r"(^([\-0-9.]+)[\-\+\*\/]([0-9.]+))");
+RegExp regexHasAnyOperation = RegExp(r"(^([\-0-9.]+)[\-\+\*\/]([0-9.]+))");
 
 RegExp regexDivOperator = RegExp(r"[\/]");
 RegExp regexMultOperator = RegExp(r"[\*]");
 RegExp regexSumOperator = RegExp(r"[\+]");
-RegExp regexMinusOperator = RegExp(r"[\-]");
+RegExp regexMinusOperator = RegExp(r"\-(?!.*\-)");
+RegExp regexPecent = RegExp(r"[\%]");
+
+//TODO: operações com porcentagem
 
 singleOperation(
-  //operationString,
   results,
-  expressionRegex,
+  operationRegex,
   operatorRegex,
   operationFunction,
 ) {
   String match = '';
 
   String currentOperaton = results;
-  Iterable<Match> matches = expressionRegex.allMatches(currentOperaton);
+  Iterable<Match> matches = operationRegex.allMatches(currentOperaton);
   for (var m in matches) {
     match = m[0]!;
   }
@@ -43,17 +46,23 @@ singleOperation(
 
   var result = operationFunction(a, b);
 
-  results = results.replaceAll(expressionRegex, result.toString());
+  results = results.replaceAll(operationRegex, result.toString());
 
   print(results);
 
   return results;
 }
 
+checkOperation(OperationRegex, results) {
+  var hasOperation = OperationRegex.hasMatch(results);
+  return hasOperation;
+}
+
 calculator(operation) {
   var results = operation;
 
-  if (results.indexOf('%') > -1) {
+  var checkPercentSingle = checkOperation(regexPercentSingle, results);
+  if (checkPercentSingle) {
     String match = '';
     RegExp exp = RegExp(r"(^([0-9.]+)\%)");
 
@@ -64,85 +73,46 @@ calculator(operation) {
       match = m[0]!;
     }
 
-    if (match == '') {
-      results = operation;
-    } else {
-      var numbers = match.split(RegExp(r"[\%]"));
+    var numbers = match.split(RegExp(r"[\%]"));
 
-      var result;
-      var n = double.tryParse(numbers[0]);
-      if (n != null) {
-        result = n / 100;
-      }
-
-      results =
-          results.replaceAll(RegExp(r"(^([0-9.]+)\%)"), result.toString());
-
-      print(result);
+    var result;
+    var n = double.tryParse(numbers[0]);
+    if (n != null) {
+      result = n / 100;
     }
+
+    results = results.replaceAll(RegExp(r"(^([0-9.]+)\%)"), result.toString());
+
+    print(result);
   }
 
-  if (results.indexOf('/') > -1) {
+  var checkDivOperation = checkOperation(regexDivOperation, results);
+  if (checkDivOperation) {
     results =
-        singleOperation(results, regexDivExpression, regexDivOperator, div);
+        singleOperation(results, regexDivOperation, regexDivOperator, div);
   }
 
-  if (results.indexOf('*') > -1) {
+  var checkMultOperation = checkOperation(regexMultOperation, results);
+  if (checkMultOperation) {
     results =
-        singleOperation(results, regexMultExpression, regexMultOperator, mult);
+        singleOperation(results, regexMultOperation, regexMultOperator, mult);
   }
 
-  if (results.indexOf('+') > -1) {
+  var checkSumOperation = checkOperation(regexSumOperation, results);
+  if (checkSumOperation) {
     results =
-        singleOperation(results, regexSumExpression, regexSumOperator, sum);
+        singleOperation(results, regexSumOperation, regexSumOperator, sum);
   }
 
-  if (results.indexOf('-') > -1) {
+  var checkMinusOperation = checkOperation(regexMinusOperation, results);
+  if (checkMinusOperation) {
     results =
-        singleOperation(results, regexMinusExpression, regexMinusOperator, sub);
-    // String match = '';
-    // RegExp expMinus = RegExp(r"(([0-9.]+)\-([0-9.]+))");
-    // RegExp expMinusPercent = RegExp(r"^(([0-9.]+)\-([0-9.]+)\%)");
-    // String currentOperaton = results;
-
-    // var matchesPercent = expMinusPercent.firstMatch(currentOperaton);
-
-    // if (matchesPercent == null) {
-    //   Iterable<Match> matches = expMinus.allMatches(currentOperaton);
-    //   for (var m in matches) {
-    //     match = m[0]!;
-    //   }
-
-    //   var numbers = match.split(RegExp(r"[\-]"));
-
-    //   var a = double.tryParse(numbers[0]);
-    //   var b = double.tryParse(numbers[1]);
-
-    //   var result = sub(a, b);
-
-    //   results = results.replaceAll(
-    //       RegExp(r"(([0-9.]+)\-([0-9.]+))"), result.toString());
-
-    //   print(results);
-    // } else {
-    //   var numbers = matchesPercent[0].toString().split(RegExp(r"[\-\%]"));
-
-    //   var a = double.tryParse(numbers[0]);
-    //   var b = double.tryParse(numbers[1]);
-
-    //   var percentValue = percent(a, b);
-
-    //   var result = sub(a, percentValue);
-
-    //   results = results.replaceAll(
-    //       RegExp(r"^(([0-9.]+)\-([0-9.]+)\%)"), result.toString());
-
-    //   print(results);
-    // }
+        singleOperation(results, regexMinusOperation, regexMinusOperator, sub);
   }
 
-  var hasExpression = regexHasAnyExpression.hasMatch(results);
-  if (hasExpression == false) {
+  var check = checkOperation(regexHasAnyOperation, results);
+
+  if (check == false) {
     return print(results);
   } else {
     return calculator(results);
