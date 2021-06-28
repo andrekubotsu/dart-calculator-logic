@@ -8,13 +8,13 @@
             "name": "Dart",
             "type": "dart",
             "request": "launch",
-            "program": "teste.dart"
+            "program": "main.dart"
         },
         {
             "name": "Dart: Run all Tests",
             "type": "dart",
             "request": "launch",
-            "program": "./test/"
+            "program": "main.dart"
         },
     ]
 }
